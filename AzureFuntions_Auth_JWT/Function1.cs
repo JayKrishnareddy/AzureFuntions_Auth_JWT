@@ -1,12 +1,10 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System;
+using System.Threading.Tasks;
 
 namespace AzureFuntions_Auth_JWT
 {
@@ -25,30 +23,10 @@ namespace AzureFuntions_Auth_JWT
             {
                 return await Task.FromResult(new UnauthorizedResult()).ConfigureAwait(false);
             }
-            else 
+            else
             {
-                GenerateJWTToken generateJWTToken = new();
-                string token = generateJWTToken.IssuingJWT(userCredentials.User);
-                return await Task.FromResult(new OkObjectResult(token)).ConfigureAwait(false);
+                return await Task.FromResult(new OkObjectResult("User is Authenticated")).ConfigureAwait(false);
             }
-
-        }
-        [FunctionName(nameof(GetData))]
-        public static async Task<IActionResult> GetData(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "data")] HttpRequest req,
-            ILogger log)
-        {
-            // Check if we have authentication info.
-            ValidateJWT auth = new ValidateJWT(req);
-
-            if (!auth.IsValid)
-            {
-                return new UnauthorizedResult(); // No authentication info.
-            }
-
-            string postData = await req.ReadAsStringAsync();
-
-            return new OkObjectResult($"{postData}");
 
         }
     }
