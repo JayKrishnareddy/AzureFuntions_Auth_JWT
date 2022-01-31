@@ -30,6 +30,25 @@ namespace AzureFuntions_Auth_JWT
             }
 
         }
+
+        [FunctionName(nameof(GetData))]
+        public static async Task<IActionResult> GetData(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "data")] HttpRequest req,
+            ILogger log)
+        {
+            // Check if we have authentication info.
+            ValidateJWT auth = new ValidateJWT(req);
+
+            if (!auth.IsValid)
+            {
+                return new UnauthorizedResult(); // No authentication info.
+            }
+
+            string postData = await req.ReadAsStringAsync();
+
+            return new OkObjectResult($"{postData}");
+
+        }
     }
 
     public class UserCredentials
