@@ -18,14 +18,15 @@ namespace AzureFuntions_Auth_JWT
             log.LogInformation("C# HTTP trigger function processed a request.");
             // TODO: Perform custom authentication here; we're just using a simple hard coded check for this example
             bool authenticated = userCredentials?.User.Equals("Jay", StringComparison.InvariantCultureIgnoreCase) ?? false;
-
             if (!authenticated)
             {
                 return await Task.FromResult(new UnauthorizedResult()).ConfigureAwait(false);
             }
             else
             {
-                return await Task.FromResult(new OkObjectResult("User is Authenticated")).ConfigureAwait(false);
+                GenerateJWTToken generateJWTToken = new();
+                string token = generateJWTToken.IssuingJWT(userCredentials.User);
+                return await Task.FromResult(new OkObjectResult(token)).ConfigureAwait(false);
             }
 
         }
